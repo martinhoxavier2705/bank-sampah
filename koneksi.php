@@ -1,7 +1,7 @@
 <?php
 define('DB_HOST', 'db.fr-pari1.bengt.wasmernet.com:10272');
 define('DB_USER', '15b3dbbe739e800064c13be1300b');
-define('DB_PASS', 'PASSWORD_BARU_KAMU');  // masukkan password BARU, bukan yang kamu kirim tadi
+define('DB_PASS', '069215b3-dbbe-75a0-8000-b41566901033');  // masukkan password BARU, bukan yang kamu kirim tadi
 define('DB_NAME', 'db6zhJ8SD9drV28SFgbfwPB2');
 
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
