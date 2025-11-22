@@ -1,21 +1,13 @@
 <?php
-/**
- * Konfigurasi Database
- * File ini hanya berisi koneksi database
- */
+define('DB_HOST', 'db.fr-pari1.bengt.wasmernet.com:10272');
+define('DB_USER', '15b3dbbe739e800064c13be1300b');
+define('DB_PASS', 'PASSWORD_BARU_KAMU');  // masukkan password BARU, bukan yang kamu kirim tadi
+define('DB_NAME', 'db6zhJ8SD9drV28SFgbfwPB2');
 
-// Konfigurasi Database
-define('DB_HOST', 'localhost');       // Tidak perlu :3306 jika default
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'bank_sampah');     // PERBAIKAN NAMA DATABASE
-
-// Membuat koneksi
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-// Cek koneksi
 if (!$conn) {
-    die("Koneksi database gagal: " . mysqli_connect_error());
+    die("Koneksi gagal: " . mysqli_connect_error());
 }
 
 // Set charset ke utf8mb4
