@@ -32,7 +32,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #480388ff 0%, #ad580dff 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -50,7 +50,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #07892eff 0%, #920b2fff 100%);
             color: white;
             padding: 40px;
             text-align: center;
@@ -78,7 +78,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
         }
         
         .role-card {
-            background: #f8f9fa;
+            background: #f1f2f1ff;
             border-radius: 15px;
             padding: 30px;
             text-align: center;
@@ -89,8 +89,8 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
         
         .role-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(11, 11, 11, 0.1);
+            border-color: #268d3bff;
         }
         
         .role-icon {
@@ -113,7 +113,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
         .btn {
             display: inline-block;
             padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4e053eff 0%, #764ba2 100%);
             color: white;
             text-decoration: none;
             border-radius: 25px;
@@ -151,7 +151,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌱 Bank Sampah</h1>
+            <h1>🌱 Selamat datang di Bank Sampah 🌱</h1>
             <p>Sistem Manajemen Tabungan Sampah Digital</p>
         </div>
         

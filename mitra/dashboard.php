@@ -371,15 +371,15 @@ $result_penimbangan = mysqli_query($conn, $query_penimbangan);
             <div class="menu-grid">
                 <a href="penjemputan.php" class="menu-item">
                     <div class="icon">📋</div>
-                    <div>Daftar Penjemputan</div>
+                    <div>Kelola Penjemputan</div>
                 </a>
                 <a href="jadwal.php" class="menu-item">
                     <div class="icon">📅</div>
-                    <div>Atur Jadwal</div>
+                    <div>Input jadwal</div>
                 </a>
                 <a href="penimbangan.php" class="menu-item">
                     <div class="icon">⚖️</div>
-                    <div>Hasil Penimbangan</div>
+                    <div>Input Penimbangan</div>
                 </a>
                 <a href="karyawan.php" class="menu-item">
                     <div class="icon">👥</div>
@@ -387,11 +387,11 @@ $result_penimbangan = mysqli_query($conn, $query_penimbangan);
                 </a>
                 <a href="laporan.php" class="menu-item">
                     <div class="icon">📊</div>
-                    <div>Laporan</div>
+                    <div>Laporan Kinerja</div>
                 </a>
                 <a href="profil.php" class="menu-item">
                     <div class="icon">👤</div>
-                    <div>Profil</div>
+                    <div>Profil Saya</div>
                 </a>
             </div>
         </div>
@@ -417,7 +417,7 @@ $result_penimbangan = mysqli_query($conn, $query_penimbangan);
                             <td><?php echo $row['no_hp']; ?></td>
                             <td><?php echo format_tanggal($row['created_at']); ?></td>
                             <td>
-                                <a href="terima_penjemputan.php?id=<?php echo $row['id']; ?>" class="btn btn-primary">
+                                <a href="penjemputan.php?terima=<?php echo $row['id']; ?>" class="btn btn-primary">
                                     Terima
                                 </a>
                             </td>
@@ -459,11 +459,11 @@ $result_penimbangan = mysqli_query($conn, $query_penimbangan);
                             </td>
                             <td>
                                 <?php if ($row['status'] == 'pending'): ?>
-                                    <a href="mulai_jemput.php?id=<?php echo $row['id']; ?>" class="btn btn-primary">
+                                    <a href="penjemputan.php?mulai=<?php echo $row['id']; ?>" class="btn btn-primary">
                                         Mulai Jemput
                                     </a>
                                 <?php elseif ($row['status'] == 'dijemput'): ?>
-                                    <a href="input_penimbangan.php?id=<?php echo $row['id']; ?>" class="btn btn-primary">
+                                    <a href="penimbangan.php?id=<?php echo $row['id']; ?>" class="btn btn-primary">
                                         Input Hasil
                                     </a>
                                 <?php else: ?>

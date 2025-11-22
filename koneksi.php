@@ -5,10 +5,10 @@
  */
 
 // Konfigurasi Database
-define('DB_HOST', 'localhost:3306');
+define('DB_HOST', 'localhost');       // Tidak perlu :3306 jika default
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'bank');
+define('DB_NAME', 'bank_sampah');     // PERBAIKAN NAMA DATABASE
 
 // Membuat koneksi
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
@@ -23,31 +23,24 @@ mysqli_set_charset($conn, "utf8mb4");
 
 // Timezone setting
 date_default_timezone_set('Asia/Jakarta');
-?>
-<?php
-/**
- * Helper Functions
- * File ini berisi semua fungsi-fungsi helper yang digunakan di seluruh sistem
- */
 
-// ============================================
-// SECURITY FUNCTIONS
-// ============================================
+/* ============================================================
+   HELPER FUNCTIONS
+   ============================================================ */
 
 /**
- * Fungsi untuk membersihkan input (mencegah SQL Injection)
+ * Sanitasi input untuk keamanan
  */
 function clean_input($data) {
     global $conn;
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
-    $data = mysqli_real_escape_string($conn, $data);
-    return $data;
+    return mysqli_real_escape_string($conn, $data);
 }
 
 /**
- * Fungsi untuk cek session login
+ * Cek login dan role
  */
 function check_login($role = null) {
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
@@ -55,7 +48,7 @@ function check_login($role = null) {
         header("Location: ../index.php");
         exit();
     }
-    
+
     if ($role !== null && $_SESSION['role'] != $role) {
         session_destroy();
         header("Location: ../index.php");
@@ -63,293 +56,139 @@ function check_login($role = null) {
     }
 }
 
-// ============================================
-// FORMATTING FUNCTIONS
-// ============================================
-
 /**
- * Fungsi untuk format rupiah
+ * Format Rupiah
  */
 function format_rupiah($angka) {
     return "Rp " . number_format($angka, 0, ',', '.');
 }
 
 /**
- * Fungsi untuk format tanggal Indonesia
+ * Format tanggal Indonesia
  */
 function format_tanggal($tanggal) {
-    $bulan = array(
-        1 => 'Januari',
-        'Februari',
-        'Maret',
-        'April',
-        'Mei',
-        'Juni',
-        'Juli',
-        'Agustus',
-        'September',
-        'Oktober',
-        'November',
-        'Desember'
-    );
-    
+    $bulan = [
+        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+
     $pecah = explode('-', date('Y-m-d', strtotime($tanggal)));
     return $pecah[2] . ' ' . $bulan[(int)$pecah[1]] . ' ' . $pecah[0];
 }
 
 /**
- * Fungsi untuk format tanggal waktu Indonesia
+ * Format tanggal dengan waktu
  */
 function format_tanggal_waktu($tanggal) {
-    $bulan = array(
-        1 => 'Januari',
-        'Februari',
-        'Maret',
-        'April',
-        'Mei',
-        'Juni',
-        'Juli',
-        'Agustus',
-        'September',
-        'Oktober',
-        'November',
-        'Desember'
-    );
-    
+    $bulan = [
+        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+
     $timestamp = strtotime($tanggal);
     $pecah = explode('-', date('Y-m-d', $timestamp));
     $waktu = date('H:i', $timestamp);
-    
+
     return $pecah[2] . ' ' . $bulan[(int)$pecah[1]] . ' ' . $pecah[0] . ' - ' . $waktu;
 }
 
-// ============================================
-// USER FUNCTIONS
-// ============================================
+/* ============================================================
+   USER FUNCTIONS
+   ============================================================ */
 
-/**
- * Fungsi untuk mendapatkan data user berdasarkan ID
- */
+/** Ambil data user */
 function get_user_data($user_id) {
     global $conn;
-    
-    if (empty($user_id) || !is_numeric($user_id)) {
-        return false;
-    }
-    
+    if (!is_numeric($user_id)) return false;
+
     $user_id = clean_input($user_id);
     $query = "SELECT * FROM users WHERE id = '$user_id'";
     $result = mysqli_query($conn, $query);
-    
-    if ($result && mysqli_num_rows($result) > 0) {
-        return mysqli_fetch_assoc($result);
-    }
-    return false;
+
+    return ($result && mysqli_num_rows($result) > 0)
+        ? mysqli_fetch_assoc($result)
+        : false;
 }
 
-/**
- * Fungsi untuk cek apakah username sudah ada
- */
+/** Cek username */
 function is_username_exists($username) {
     global $conn;
-    
+
     $username = clean_input($username);
     $query = "SELECT id FROM users WHERE username = '$username'";
     $result = mysqli_query($conn, $query);
-    
+
     return ($result && mysqli_num_rows($result) > 0);
 }
 
-// ============================================
-// TABUNGAN FUNCTIONS
-// ============================================
+/* ============================================================
+   TABUNGAN FUNCTIONS
+   ============================================================ */
 
-/**
- * Fungsi untuk mendapatkan saldo warga
- */
 function get_saldo_warga($warga_id) {
     global $conn;
-    
-    // Validasi warga_id
-    if (empty($warga_id) || !is_numeric($warga_id)) {
-        return 0;
-    }
-    
+
+    if (!is_numeric($warga_id)) return 0;
+
     $warga_id = clean_input($warga_id);
-    $query = "SELECT saldo FROM tabungan WHERE warga_id = '$warga_id'";
-    $result = mysqli_query($conn, $query);
-    
+    $result = mysqli_query($conn, "SELECT saldo FROM tabungan WHERE warga_id='$warga_id'");
+
     if ($result && mysqli_num_rows($result) > 0) {
-        $data = mysqli_fetch_assoc($result);
-        return $data['saldo'];
+        return mysqli_fetch_assoc($result)['saldo'];
     }
-    
-    // Jika belum ada record tabungan, buat record baru dengan saldo 0
-    $insert_query = "INSERT INTO tabungan (warga_id, saldo) VALUES ('$warga_id', 0)";
-    if (mysqli_query($conn, $insert_query)) {
-        return 0;
-    }
-    
+
+    mysqli_query($conn, "INSERT INTO tabungan (warga_id, saldo) VALUES ('$warga_id', 0)");
     return 0;
 }
 
-/**
- * Fungsi untuk update saldo warga
- */
 function update_saldo_warga($warga_id, $jumlah) {
     global $conn;
-    
-    if (empty($warga_id) || !is_numeric($warga_id)) {
-        return false;
-    }
-    
+
+    if (!is_numeric($warga_id)) return false;
+
     $warga_id = clean_input($warga_id);
     $jumlah = clean_input($jumlah);
-    
-    // Cek apakah sudah ada record tabungan
-    $check = mysqli_query($conn, "SELECT id FROM tabungan WHERE warga_id = '$warga_id'");
-    
+
+    $check = mysqli_query($conn, "SELECT id FROM tabungan WHERE warga_id='$warga_id'");
+
     if (mysqli_num_rows($check) > 0) {
-        // Update saldo yang sudah ada
-        $query = "UPDATE tabungan SET saldo = saldo + $jumlah WHERE warga_id = '$warga_id'";
-    } else {
-        // Insert saldo baru
-        $query = "INSERT INTO tabungan (warga_id, saldo) VALUES ('$warga_id', '$jumlah')";
+        return mysqli_query($conn,
+            "UPDATE tabungan SET saldo = saldo + $jumlah WHERE warga_id='$warga_id'"
+        );
     }
-    
-    return mysqli_query($conn, $query);
+
+    return mysqli_query($conn,
+        "INSERT INTO tabungan (warga_id, saldo) VALUES ('$warga_id', '$jumlah')"
+    );
 }
 
-/**
- * Fungsi untuk kurangi saldo warga (untuk penarikan)
- */
 function kurangi_saldo_warga($warga_id, $jumlah) {
     global $conn;
-    
-    if (empty($warga_id) || !is_numeric($warga_id)) {
-        return false;
-    }
-    
-    $warga_id = clean_input($warga_id);
-    $jumlah = clean_input($jumlah);
-    
-    // Cek saldo cukup atau tidak
-    $saldo_saat_ini = get_saldo_warga($warga_id);
-    
-    if ($saldo_saat_ini < $jumlah) {
-        return false; // Saldo tidak cukup
-    }
-    
-    $query = "UPDATE tabungan SET saldo = saldo - $jumlah WHERE warga_id = '$warga_id'";
-    return mysqli_query($conn, $query);
+
+    if (!is_numeric($warga_id)) return false;
+
+    $saldo_sekarang = get_saldo_warga($warga_id);
+    if ($saldo_sekarang < $jumlah) return false;
+
+    return mysqli_query($conn,
+        "UPDATE tabungan SET saldo = saldo - $jumlah WHERE warga_id='$warga_id'"
+    );
 }
 
-// ============================================
-// STATISTIK FUNCTIONS
-// ============================================
+/* ============================================================
+   VALIDATION FUNCTIONS
+   ============================================================ */
 
-/**
- * Fungsi untuk mendapatkan total penjemputan warga
- */
-function get_total_penjemputan($warga_id) {
-    global $conn;
-    
-    if (empty($warga_id) || !is_numeric($warga_id)) {
-        return 0;
-    }
-    
-    $warga_id = clean_input($warga_id);
-    $query = "SELECT COUNT(*) as total FROM penjemputan WHERE warga_id = '$warga_id'";
-    $result = mysqli_query($conn, $query);
-    
-    if ($result && mysqli_num_rows($result) > 0) {
-        $data = mysqli_fetch_assoc($result);
-        return $data['total'];
-    }
-    
-    return 0;
-}
-
-/**
- * Fungsi untuk mendapatkan total berat sampah warga
- */
-function get_total_berat_sampah($warga_id) {
-    global $conn;
-    
-    if (empty($warga_id) || !is_numeric($warga_id)) {
-        return 0;
-    }
-    
-    $warga_id = clean_input($warga_id);
-    $query = "SELECT COALESCE(SUM(berat_kg), 0) as total FROM transaksi_sampah WHERE warga_id = '$warga_id'";
-    $result = mysqli_query($conn, $query);
-    
-    if ($result && mysqli_num_rows($result) > 0) {
-        $data = mysqli_fetch_assoc($result);
-        return $data['total'];
-    }
-    
-    return 0;
-}
-
-// ============================================
-// NOTIFICATION FUNCTIONS
-// ============================================
-
-/**
- * Fungsi untuk membuat notifikasi
- */
-function create_notification($user_id, $message, $type = 'info') {
-    // Bisa dikembangkan untuk sistem notifikasi
-    // Saat ini hanya return true
-    return true;
-}
-
-/**
- * Fungsi untuk log aktivitas
- */
-function log_activity($user_id, $activity, $details = '') {
-    global $conn;
-    
-    if (empty($user_id) || !is_numeric($user_id)) {
-        return false;
-    }
-    
-    $user_id = clean_input($user_id);
-    $activity = clean_input($activity);
-    $details = clean_input($details);
-    
-    // Bisa ditambahkan tabel log_aktivitas untuk tracking
-    // $query = "INSERT INTO log_aktivitas (user_id, activity, details) VALUES ('$user_id', '$activity', '$details')";
-    // return mysqli_query($conn, $query);
-    
-    return true;
-}
-
-// ============================================
-// VALIDATION FUNCTIONS
-// ============================================
-
-/**
- * Fungsi untuk validasi email
- */
 function is_valid_email($email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
-/**
- * Fungsi untuk validasi nomor HP
- */
 function is_valid_phone($phone) {
-    // Format: 08xxxxxxxxxx (minimal 10 digit, maksimal 13 digit)
     return preg_match('/^08[0-9]{8,11}$/', $phone);
 }
 
-/**
- * Fungsi untuk validasi password
- */
 function is_valid_password($password) {
-    // Minimal 6 karakter
-    return (strlen($password) >= 6);
+    return strlen($password) >= 6;
 }
+
 ?>
